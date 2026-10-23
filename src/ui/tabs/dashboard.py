@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-
 from src.charts import build_discount_scatter
 
 def render(df_filtered: pd.DataFrame) -> None:

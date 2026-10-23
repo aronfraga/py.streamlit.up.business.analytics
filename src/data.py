@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-
 from src.config import resolve_path
 from src.constants import DATA_FILENAME, DATE_COLUMN
 

@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import streamlit as st
 
 def load_css(css_path: Path) -> None:

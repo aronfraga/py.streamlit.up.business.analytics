@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import joblib
-
 from src.config import resolve_path
 from src.constants import MODEL_FILENAME
 

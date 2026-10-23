@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-
 from src.constants import DATA_FILENAME, UPLOAD_FILE_TYPES
 from src.data import load_base_data, parse_uploaded_file
 

@@ -1,5 +1,4 @@
 import streamlit as st
-
 from src.constants import FOOTER_TEXT, PAGE_TITLE
 from src.metrics import format_thousands
 

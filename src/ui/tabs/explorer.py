@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-
 from src.constants import EXPLORER_COLUMNS, EXPORT_FILENAME
 
 def render(df_filtered: pd.DataFrame) -> None:

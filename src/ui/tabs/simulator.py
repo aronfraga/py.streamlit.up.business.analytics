@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-
 from src.charts import build_risk_gauge
 from src.constants import RISK_HIGH_THRESHOLD, RISK_LOW_THRESHOLD
 from src.model import predict_loss_probability
