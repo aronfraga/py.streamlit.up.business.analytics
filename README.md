@@ -2,6 +2,8 @@
 
 Aplicacion analitica interactiva y simulador predictivo what-if desarrollada con Streamlit, Plotly y Scikit-Learn para la toma de decisiones comerciales.
 
+**Demo en vivo:** [businessanalytics.streamlit.app](https://businessanalytics.streamlit.app/)
+
 ## Descripcion del proyecto
 
 Esta solucion combina analitica descriptiva, diagnostica y prescriptiva para una cadena minorista multiregion:
@@ -77,3 +79,5 @@ La aplicacion estara disponible en `http://localhost:8501`.
 2. Seleccionar este repositorio y la rama `main`.
 3. Especificar `app.py` como el archivo principal.
 4. Presionar **Deploy**. La aplicacion quedara publicada bajo una URL publica HTTPS.
+
+La version en produccion esta disponible en: https://businessanalytics.streamlit.app/
