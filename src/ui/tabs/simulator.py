@@ -60,7 +60,7 @@ def _render_inputs(df_raw: pd.DataFrame, metadata: dict) -> dict:
 
 def _render_verdict(prob_perdida: float) -> None:
     st.markdown("##### 3. Dictamen del modelo de riesgo")
-    st.plotly_chart(build_risk_gauge(prob_perdida), use_container_width=True)
+    st.plotly_chart(build_risk_gauge(prob_perdida), width="stretch")
 
     if prob_perdida < RISK_LOW_THRESHOLD:
         st.success("**Operacion recomendada:** Riesgo bajo. La transaccion preserva un margen saludable.")
