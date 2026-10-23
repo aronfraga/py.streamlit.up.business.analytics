@@ -13,30 +13,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-st.markdown("""
-<style>
-    .main-title { font-size: 2.0rem; font-weight: 700; color: #0A3073; margin-bottom: 2px; }
-    .sub-title { font-size: 0.95rem; color: #5A5F6E; margin-bottom: 18px; }
-    div[data-testid="stMetricValue"] { font-size: 1.6rem; font-weight: 700; color: #0A3073; }
-    div[data-testid="metric-container"] {
-        background-color: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        padding: 12px 18px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .badge-data {
-        background-color: #EEF4FC;
-        color: #0A3073;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        display: inline-block;
-        margin-bottom: 8px;
-    }
-</style>
-""", unsafe_allow_html=True)
+def load_css(css_path: Path) -> None:
+    css = css_path.read_text(encoding="utf-8")
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
+
+load_css(Path(__file__).parent / "assets" / "styles.css")
+
+BRAND_COLORS = ["#0A3073", "#2563EB", "#14B8A6", "#F59E0B", "#8B5CF6"]
+CHART_FONT = dict(family="Inter, sans-serif", color="#1E2433")
 
 @st.cache_resource(show_spinner="Inicializando modelo predictivo de Machine Learning...")
 def load_ml_model():
@@ -134,8 +118,15 @@ if regiones_sel and "region" in df_filtered.columns:
 if cats_sel and "categoria" in df_filtered.columns:
     df_filtered = df_filtered[df_filtered["categoria"].isin(cats_sel)]
 
-st.markdown('<p class="main-title">Supertienda Analytics Hub</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">Plataforma de inteligencia de negocios y simulacion prescriptiva de decisiones comerciales.</p>', unsafe_allow_html=True)
+registros_txt = f"{len(df_filtered):,}".replace(",", ".")
+st.markdown(f"""
+<div class="hero">
+    <div class="hero-title">Supertienda Analytics Hub</div>
+    <div class="hero-sub">Plataforma de inteligencia de negocios y simulacion prescriptiva de decisiones comerciales.</div>
+    <span class="hero-pill">{registros_txt} registros filtrados</span>
+    <span class="hero-pill">ROC-AUC {metadata['roc_auc']}</span>
+</div>
+""", unsafe_allow_html=True)
 
 if df_filtered.empty:
     st.warning("No hay registros que coincidan con los filtros seleccionados.")
@@ -228,24 +219,30 @@ with tab_sim:
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number",
             value=prob_perdida * 100,
-            title={'text': "Probabilidad de Perdida Neta (%)"},
-            number={'suffix': "%"},
+            title={'text': "Probabilidad de Perdida Neta", 'font': {'size': 14, 'color': "#64748B"}},
+            number={'suffix': "%", 'valueformat': ".1f", 'font': {'size': 40, 'color': "#0A3073"}},
             gauge={
-                'axis': {'range': [0, 100]},
-                'bar': {'color': "#0A3073"},
+                'axis': {'range': [0, 100], 'tickcolor': "#94A3B8", 'tickfont': {'color': "#64748B"}},
+                'bar': {'color': "#0A3073", 'thickness': 0.3},
+                'borderwidth': 0,
                 'steps': [
                     {'range': [0, 30], 'color': "#D1FAE5"},
                     {'range': [30, 60], 'color': "#FEF3C7"},
                     {'range': [60, 100], 'color': "#FEE2E2"}
                 ],
                 'threshold': {
-                    'line': {'color': "red", 'width': 4},
+                    'line': {'color': "#DC2626", 'width': 3},
                     'thickness': 0.75,
                     'value': 60
                 }
             }
         ))
-        fig_gauge.update_layout(height=260, margin=dict(l=20, r=20, t=35, b=20))
+        fig_gauge.update_layout(
+            height=260,
+            margin=dict(l=20, r=20, t=40, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            font=CHART_FONT
+        )
         st.plotly_chart(fig_gauge, use_container_width=True)
 
         if prob_perdida < 0.30:
@@ -265,10 +262,23 @@ with tab_dash:
             color="categoria" if "categoria" in df_filtered.columns else None,
             size="venta" if "venta" in df_filtered.columns else None,
             hover_data=["subcategoria", "region"] if "subcategoria" in df_filtered.columns else None,
-            title="Ganancia Neta vs. Descuento Aplicado en Transacciones Activas"
+            title="Ganancia Neta vs. Descuento Aplicado en Transacciones Activas",
+            color_discrete_sequence=BRAND_COLORS,
+            opacity=0.7
         )
-        fig_scat.add_hline(y=0, line_dash="dash", line_color="red")
-        fig_scat.update_layout(template="plotly_white")
+        fig_scat.add_hline(y=0, line_dash="dash", line_color="#DC2626", line_width=1.5)
+        fig_scat.update_layout(
+            template="plotly_white",
+            height=520,
+            font=CHART_FONT,
+            title_font=dict(size=15, color="#1E2433"),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=10, r=10, t=70, b=10),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, title_text="")
+        )
+        fig_scat.update_xaxes(tickformat=".0%", gridcolor="#EEF2F7", zeroline=False, title_text="Descuento")
+        fig_scat.update_yaxes(gridcolor="#EEF2F7", zeroline=False, tickprefix="$", title_text="Ganancia")
         st.plotly_chart(fig_scat, use_container_width=True)
     else:
         st.info("El dataset activo no contiene las columnas requeridas ('descuento', 'ganancia').")
@@ -290,10 +300,19 @@ with tab_model:
     st.subheader("Ficha Tecnica de Arquitectura del Modelo")
     col_m1, col_m2 = st.columns(2)
     with col_m1:
-        st.write("**Algoritmo:** Random Forest Classifier (Pipeline de Scikit-Learn)")
-        st.write(f"**ROC-AUC Score:** `{metadata['roc_auc']}`")
-        st.write("**Features categoricas:**", metadata.get("cat_features", []))
-        st.write("**Features numericas:**", metadata.get("num_features", []))
+        cat_chips = "".join(f'<span class="chip">{f}</span>' for f in metadata.get("cat_features", []))
+        num_chips = "".join(f'<span class="chip">{f}</span>' for f in metadata.get("num_features", []))
+        st.markdown(
+            '<div class="spec-label">Algoritmo</div>'
+            '<div>Random Forest Classifier (Pipeline de Scikit-Learn)</div>'
+            '<div class="spec-label">ROC-AUC Score</div>'
+            f'<div><span class="chip">{metadata["roc_auc"]}</span></div>'
+            '<div class="spec-label">Features categoricas</div>'
+            f'<div>{cat_chips}</div>'
+            '<div class="spec-label">Features numericas</div>'
+            f'<div>{num_chips}</div>',
+            unsafe_allow_html=True
+        )
     with col_m2:
         st.info("""
         **Politica de Despliegue en la Nube:**
@@ -302,4 +321,4 @@ with tab_model:
         """)
 
 st.divider()
-st.caption("Universidad de Palermo • Business Intelligence & Analytics • Clase 11: Cloud Deploy • Ing. Matias A. Perez")
+st.markdown('<div class="app-footer">Universidad de Palermo • Business Intelligence & Analytics • Clase 11: Cloud Deploy • Ing. Matias A. Perez</div>', unsafe_allow_html=True)
