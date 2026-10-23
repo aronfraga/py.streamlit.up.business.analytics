@@ -14,7 +14,21 @@ Esta solucion combina analitica descriptiva, diagnostica y prescriptiva para una
 
 ```text
 app_supertienda_produccion/
-├── app.py                      # Punto de entrada de la aplicacion Streamlit
+├── app.py                      # Punto de entrada: configura la pagina y orquesta los modulos
+├── src/
+│   ├── constants.py            # Constantes: textos, archivos, columnas, umbrales de riesgo y colores
+│   ├── config.py               # Rutas del proyecto y resolucion de archivos
+│   ├── data.py                 # Carga del dataset, lectura de archivos subidos y filtros
+│   ├── model.py                # Carga del modelo e inferencia
+│   ├── metrics.py              # Calculo y formateo de KPIs
+│   ├── charts.py               # Construccion de graficos Plotly
+│   └── ui/
+│       ├── styles.py           # Inyeccion de CSS
+│       ├── sidebar.py          # Centro de control de datos y filtros
+│       ├── layout.py           # Hero, tarjetas KPI y footer
+│       └── tabs/               # Una vista por pestana (simulador, tablero, explorador, ficha del modelo)
+├── assets/
+│   └── styles.css              # Estilos institucionales de la interfaz
 ├── requirements.txt            # Dependencias de Python para el contenedor
 ├── supertienda_curated.parquet # Dataset base en formato columnar optimizado
 ├── model_superstore.joblib     # Modelo predictivo entrenado serializado
